@@ -3,7 +3,7 @@ use std::env;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
-pub fn convert_image() -> image::ImageResult<(Vec<u8>, u32, u32)> {
+pub fn convert_image_into_raw() -> image::ImageResult<(Vec<u8>, u32, u32)> {
     // take in 2 argument that is the file path of the image
     // and no. of rows (which represents the resolution)
     let args: Vec<String> = env::args().collect();
@@ -36,22 +36,7 @@ pub fn convert_image() -> image::ImageResult<(Vec<u8>, u32, u32)> {
 
     let pixels: Vec<u8> = gray.into_raw();
 
-    // change this line to change the letters used
-    //
-    //
-    //
-    //let clovis: [u8; 7] = [b' ', b'l', b'c', b'i', b'v', b's', b'o'];
-    //let clovis = *b" .`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
-    let clovis = *b" .:-=+*#%@";
-    //
-    //
-    //
-    //
-    //
-
-    let output: Vec<u8> = brightness_to_letter(pixels, &clovis);
-
-    Ok((output, width, height))
+    Ok((pixels, width, height))
 }
 
 pub fn print_into_file(output: Vec<u8>, width: u32, height: u32) -> Result<(), std::io::Error> {
@@ -73,6 +58,31 @@ pub fn print_into_file(output: Vec<u8>, width: u32, height: u32) -> Result<(), s
     Ok(())
 }
 
+pub fn raw_to_brightness_level(pixels: Vec<u8>, letters: &[u8]) -> Vec<u8> {
+    // the pixels vector should contain 0 to 255 scale of brightness
+    // which represents all the pixel in the image
+    // propably after downgrading
+    assert!(!letters.is_empty(), "letters cannot be empty");
+
+    pixels
+        .iter()
+        .map(|&grayscale| (usize::from(grayscale) * letters.len() / 256) as u8)
+        //.map(|index| letters[index])
+        .collect()
+}
+
+pub fn brightness_level_to_letter(brightness_level: Vec<u8>, letters: &[u8]) -> Vec<u8> {
+    // the pixels vector should contain 0 to 255 scale of brightness
+    // which represents all the pixel in the image
+    // propably after downgrading
+    assert!(!letters.is_empty(), "letters cannot be empty");
+
+    brightness_level
+        .iter()
+        .map(|&index| letters[usize::from(index)])
+        .collect()
+}
+
 //
 //
 //
@@ -91,16 +101,3 @@ pub fn print_into_file(output: Vec<u8>, width: u32, height: u32) -> Result<(), s
 //
 //
 //
-
-fn brightness_to_letter(pixels: Vec<u8>, letters: &[u8]) -> Vec<u8> {
-    // the pixels vector should contain 0 to 255 scale of brightness
-    // which represents all the pixel in the image
-    // propably after downgrading
-    assert!(!letters.is_empty(), "letters cannot be empty");
-
-    pixels
-        .iter()
-        .map(|&grayscale| usize::from(grayscale) * letters.len() / 256)
-        .map(|index| letters[index])
-        .collect()
-}

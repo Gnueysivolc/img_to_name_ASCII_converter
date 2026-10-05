@@ -1,6 +1,5 @@
-/target/
+/target
 *.png
 *.jpg
 *.jpeg
-/result.txt
-/art.txt
+*.txt
