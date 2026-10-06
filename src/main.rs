@@ -1,7 +1,13 @@
-use unique_file_type::run;
+use unique_file_type::{encode_and_create_file_run, just_decode_and_run, run};
 
 fn main() -> image::ImageResult<()> {
-    run()
+    //run()
+
+    //encode_and_create_file_run()?;
+
+    just_decode_and_run();
+
+    Ok(())
 }
 
 //

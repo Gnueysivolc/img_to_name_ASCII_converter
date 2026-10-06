@@ -3,6 +3,11 @@ use std::env;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
+// basically collects the argument from terminal running command, then take the path and resolution
+// (no. of column) of the image want to output as ASCII, then resize the image and turn it into
+// grayscale with the help of image crate
+//
+//then return the pixels data in grayscale [u8] from 0 to 255, and width and height
 pub fn convert_image_into_raw() -> image::ImageResult<(Vec<u8>, u32, u32)> {
     // take in 2 argument that is the file path of the image
     // and no. of rows (which represents the resolution)
@@ -39,6 +44,10 @@ pub fn convert_image_into_raw() -> image::ImageResult<(Vec<u8>, u32, u32)> {
     Ok((pixels, width, height))
 }
 
+// this function takes the output from the final all letter changed vector and print it into a file
+// called result.txt
+//
+// which is regulated by height and width and will output final product of the ASCIII art
 pub fn print_into_file(output: Vec<u8>, width: u32, height: u32) -> Result<(), std::io::Error> {
     let file = File::create("result.txt")?;
     let mut writer = BufWriter::new(file);
@@ -58,6 +67,11 @@ pub fn print_into_file(output: Vec<u8>, width: u32, height: u32) -> Result<(), s
     Ok(())
 }
 
+// this function converts the raw pixel which contains grayscale [u8] 0-255, into brightness level
+// classified from 0 to a number which is the length of the name or choosen ASCII character no. to use
+//
+// then returns the level of brightness in the form of vector which can be used for any array of
+// ASCII character will the same length or no. of characters
 pub fn raw_to_brightness_level(pixels: Vec<u8>, letters: &[u8]) -> Vec<u8> {
     // the pixels vector should contain 0 to 255 scale of brightness
     // which represents all the pixel in the image
@@ -71,6 +85,8 @@ pub fn raw_to_brightness_level(pixels: Vec<u8>, letters: &[u8]) -> Vec<u8> {
         .collect()
 }
 
+// this functions change the brightness level vector into letters from the ASCII array given, so
+// just substitue the index and change into the letters in form of u8
 pub fn brightness_level_to_letter(brightness_level: Vec<u8>, letters: &[u8]) -> Vec<u8> {
     // the pixels vector should contain 0 to 255 scale of brightness
     // which represents all the pixel in the image
